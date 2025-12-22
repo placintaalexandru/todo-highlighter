@@ -1,11 +1,6 @@
 name: Build
 on:
   workflow_call:
-    inputs:
-      # boolean: publish or just build
-      release:
-        required: true
-        type: boolean
 jobs:
   artifacts:
     name: Build Artifacts

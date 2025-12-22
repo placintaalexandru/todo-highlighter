@@ -13,8 +13,6 @@ concurrency:
 jobs:
   build:
     uses: .github/workflows/build.yml@main
-    with:
-      release: false
   test_binaries_linux:
     name: Test Binaries Linux
     needs: build
