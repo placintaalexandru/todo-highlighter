@@ -1,6 +1,6 @@
 # TODO-HIGHLIGHT for ZED
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) [![Zed Extension](https://img.shields.io/badge/-Zed_Extension-blue?style=flat&logo=zedindustries&logoColor=%23FFFFFF&logoSize=auto&labelColor=%23111111&color=%23084CCF)](https://zed.dev/extensions/color-highlight)
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) [![Zed Extension](https://img.shields.io/badge/-Zed_Extension-blue?style=flat&logo=zedindustries&logoColor=%23FFFFFF&logoSize=auto&labelColor=%23111111&color=%23084CCF)](https://zed.dev/extensions/color-highlight) [![Codecov](https://img.shields.io/codecov/c/github/crusty-pie/toolchain?logo=codecov&label=Coverage)](https://app.codecov.io/gh/placintaalexandru/todo-highlighter)
 
 <img align="right" width="200" height="200" src="./assets/logo.jpg">
 
