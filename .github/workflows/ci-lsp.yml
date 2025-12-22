@@ -101,11 +101,9 @@ jobs:
     - name: Prepare artifacts (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        BIN_DIR="target/${{ matrix.target }}/release"
-        BIN="$BIN_DIR/${{ env.APP_NAME }}"
-        cd "$BIN_DIR"
+        cd target/${{ matrix.target }}/release
         strip "${{ env.APP_NAME }}".exe
-        7z a ../../../"${{ env.APP_NAME }}-${{ matrix.name }}" "${{ env.APP_NAME }}".exe
+        7z a ../../../${{ matrix.name }} "${{ env.APP_NAME }}".exe
         cd -
 
     - name: Prepare artifacts (Linux / macOS)
