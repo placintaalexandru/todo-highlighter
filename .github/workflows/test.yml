@@ -103,3 +103,4 @@ jobs:
           # Exit with error if codecov runs into error
           fail_ci_if_error: true
           verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
