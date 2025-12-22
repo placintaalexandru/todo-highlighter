@@ -1,10 +1,11 @@
 name: Test Binaries
 on:
-  workflow_run:
-    workflows:
-    - Build
-    types:
-    - completed
+  pull_request:
+  push:
+    branches:
+    - main
+    tags:
+    - "v*"
 concurrency:
   # Cancel old actions upon push
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -20,6 +21,11 @@ jobs:
         - arch: aarch64
     runs-on: ubuntu-latest
     steps:
+    - name: Build
+      uses: .github/workflows/build.yml
+      with:
+        release: false
+
     - name: Download Artifacts
       uses: actions/download-artifact@v4
       with:

@@ -18,7 +18,7 @@ jobs:
     name: stable / fmt
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Install Stable
       uses: crusty-pie/toolchain@v1
@@ -45,7 +45,7 @@ jobs:
         - beta
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Install ${{ matrix.toolchain }}
       uses: crusty-pie/toolchain@v1
@@ -79,7 +79,7 @@ jobs:
     name: nightly / doc
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     # Running on nightly allows for certain configurations
     # Also `docs.rs` is built based on nightly
@@ -105,7 +105,7 @@ jobs:
     name: stable / features
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Install Stable
       uses: crusty-pie/toolchain@v1
@@ -134,7 +134,7 @@ jobs:
     name: msrv / ${{ matrix.msrv }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Install ${{ matrix.msrv }}
       uses: crusty-pie/toolchain@v1
