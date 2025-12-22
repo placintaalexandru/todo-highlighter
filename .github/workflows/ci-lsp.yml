@@ -1,4 +1,4 @@
-name: Test Binaries
+name: CI
 on:
   pull_request:
   push:
@@ -184,8 +184,8 @@ jobs:
   release:
     name: Release
     needs: build
-    runs-on: ubuntu-latest
     if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
     steps:
     - name: Setup | Checkout
       uses: actions/checkout@v4
