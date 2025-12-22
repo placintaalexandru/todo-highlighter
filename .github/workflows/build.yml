@@ -6,10 +6,6 @@ on:
       release:
         required: true
         type: boolean
-concurrency:
-  # Cancel old actions upon push
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
 jobs:
   artifacts:
     name: Build Artifacts
