@@ -4,10 +4,13 @@ use getset::Getters;
 
 use crate::entities::{Column, Row, RowMetadata};
 
+/// Represents a match of one of the user-defined keywords inside a row
 #[derive(Debug, Getters)]
 pub struct Match {
+    /// The column inside the row where the match starts
     #[getset(get = "pub")]
     column: Column,
+    /// User configures keyword that triggered the match
     #[getset(get = "pub")]
     keyword: String,
 }
@@ -21,8 +24,10 @@ impl Match {
     }
 }
 
+/// Encapsulates all the matches inside a file
 #[derive(Debug, Default, Getters)]
 pub struct FileState {
+    /// Container for organizing matches by row
     #[getset(get = "pub")]
     rows: HashMap<Row, (RowMetadata, Vec<Match>)>,
 }

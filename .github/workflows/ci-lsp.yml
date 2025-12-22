@@ -183,6 +183,7 @@ jobs:
     name: Release
     needs: build
     runs-on: ubuntu-latest
+    if: github.ref_type == 'tag'
     steps:
     - name: Setup | Checkout
       uses: actions/checkout@v4
@@ -203,7 +204,6 @@ jobs:
 
     - name: Publish
       uses: softprops/action-gh-release@v2
-      if: github.ref_type == 'tag'
       with:
         files: release-dist/**/*
       env:
