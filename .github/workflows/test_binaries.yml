@@ -12,11 +12,9 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    steps:
-    - name: Build
-      uses: .github/workflows/build.yml
-      with:
-        release: false
+    uses: .github/workflows/build.yml
+    with:
+      release: false
   test_binaries_linux:
     name: Test Binaries Linux
     needs: build
