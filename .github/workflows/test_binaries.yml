@@ -20,8 +20,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - arch: amd64
-        - arch: aarch64
+        - suffix: linux
+          arch: amd64
+        - suffix: linux-musl
+          arch: amd64
+
+        # - arch: aarch64
     runs-on: ubuntu-latest
     steps:
     - name: Download Artifacts
@@ -35,6 +39,10 @@ jobs:
         for file in release-dist/**/*;
           do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256";
         done
+
+    - name: Extract Artifact Archive
+      run: |
+        tar -xzvf todo-highlight-lsp-${{ matrix.suffix }}-${{ matrix.arch }}.tar.gz
 
     - name: Test Bin
       run: ./todo-highlight-lsp --version
