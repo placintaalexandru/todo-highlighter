@@ -98,7 +98,7 @@ jobs:
         cd target/${{ matrix.target }}/release
         # TODO: investigate better cross platform stripping
         strip todo-highlight-lsp || true
-        tar czvf ../../../${{ matrix.name }} todo-highlight-lsp
+        tar -czvf ../../../${{ matrix.name }} todo-highlight-lsp
         cd -
 
     - name: Upload Artifacts

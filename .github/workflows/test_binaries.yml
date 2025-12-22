@@ -31,6 +31,7 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
       with:
+        name: todo-highlight-lsp-${{ matrix.suffix }}-${{ matrix.arch }}.tar.gz
         path: release-dist
 
     - name: Checksums
