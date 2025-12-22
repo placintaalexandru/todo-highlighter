@@ -69,7 +69,7 @@ jobs:
     - name: Download Artifact Archive
       uses: actions/download-artifact@v7
       with:
-        name: todo-highlight-lsp-${{ matrix.suffix }}.tar.gz
+        name: todo-highlight-lsp-${{ matrix.suffix }}.zip
         path: release-dist
 
     - name: Checksums
@@ -81,7 +81,7 @@ jobs:
 
     - name: Extract Artifact Archive
       run: |
-        tar -xzvf release-dist/todo-highlight-lsp-${{ matrix.suffix }}.tar.gz -C .
+        tar -xzvf release-dist/todo-highlight-lsp-${{ matrix.suffix }}.zip -C .
 
     - name: Test Bin
-      run: ./todo-highlight-lsp --version
+      run: ./todo-highlight-lsp.exe --version
