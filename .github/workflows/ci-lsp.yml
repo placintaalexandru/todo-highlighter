@@ -1,4 +1,4 @@
-name: Test Binaries
+name: CI
 on:
   pull_request:
   push:
@@ -11,6 +11,9 @@ concurrency:
   # Cancel old actions upon push
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
+env:
+  APP_NAME: todo-highlight-lsp
+  CARGO_TERM_COLOR: always
 jobs:
   build:
     name: Build Binaries
@@ -20,42 +23,42 @@ jobs:
         include:
         - target: x86_64-unknown-linux-gnu
           os: ubuntu-latest
-          name: todo-highlight-lsp-linux-amd64.tar.gz
+          name: linux-amd64.tar.gz
           arch: x86_64
 
         - target: aarch64-unknown-linux-gnu
           os: ubuntu-latest
-          name: todo-highlight-lsp-linux-arm64.tar.gz
+          name: linux-arm64.tar.gz
           arch: aarch64
 
         - target: x86_64-apple-darwin
           os: macOS-latest
-          name: todo-highlight-lsp-darwin-amd64.tar.gz
+          name: darwin-amd64.tar.gz
           arch: x86_64
 
         - target: aarch64-apple-darwin
           os: macOS-latest
-          name: todo-highlight-lsp-darwin-arm64.tar.gz
+          name: darwin-arm64.tar.gz
           arch: aarch64
 
         - target: x86_64-pc-windows-msvc
           os: windows-latest
-          name: todo-highlight-lsp-windows-amd64.zip
+          name: windows-amd64.zip
           arch: x86_64
 
         - target: x86_64-unknown-linux-musl
           os: ubuntu-latest
-          name: todo-highlight-lsp-linux-musl-amd64.tar.gz
+          name: linux-musl-amd64.tar.gz
           arch: x86_64
 
         - target: aarch64-unknown-linux-musl
           os: ubuntu-latest
-          name: todo-highlight-lsp-linux-musl-arm64.tar.gz
+          name: linux-musl-arm64.tar.gz
           arch: aarch64
 
         - target: aarch64-pc-windows-msvc
           os: windows-latest
-          name: todo-highlight-lsp-windows-arm64.zip
+          name: windows-arm64.zip
           arch: aarch64
     runs-on: ${{ matrix.os }}
     steps:
@@ -95,28 +98,27 @@ jobs:
         args: --release --target ${{ matrix.target }}
         use-cross: ${{ matrix.os == 'ubuntu-latest' }}
 
-    - name: Prepare artifacts [Windows]
+    - name: Prepare artifacts (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         cd target/${{ matrix.target }}/release
-        strip todo-highlight-lsp.exe
-        7z a ../../../${{ matrix.name }} todo-highlight-lsp.exe
+        strip "${{ env.APP_NAME }}".exe
+        7z a ../../../"${{ env.APP_NAME }}-${{ matrix.name }}" "${{ env.APP_NAME }}".exe
         cd -
 
-    - name: Prepare artifacts [Linux & macOS]
+    - name: Prepare artifacts (Linux / macOS)
       if: matrix.os != 'windows-latest'
       run: |
-        cd target/${{ matrix.target }}/release
-        # TODO: investigate better cross platform stripping
-        strip todo-highlight-lsp || true
-        tar -czvf ../../../${{ matrix.name }} todo-highlight-lsp
-        cd -
+        BIN_DIR="target/${{ matrix.target }}/release"
+        BIN="$BIN_DIR/${{ env.APP_NAME }}"
+        command -v strip >/dev/null && strip "$BIN" || true
+        tar -czvf "${{ env.APP_NAME }}-${{ matrix.name }}" -C "$BIN_DIR" "${{ env.APP_NAME }}"
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v6
       with:
-        name: ${{ matrix.name }}
-        path: ${{ matrix.name }}
+        name: "${{ env.APP_NAME }}-${{ matrix.name }}"
+        path: "${{ env.APP_NAME }}-${{ matrix.name }}"
   test_binaries_unix:
     name: Test Binaries (Linux & macOS)
     needs: build
@@ -141,15 +143,15 @@ jobs:
     - name: Download Artifact Archive
       uses: actions/download-artifact@v7
       with:
-        name: todo-highlight-lsp-${{ matrix.suffix }}.tar.gz
+        name: "${{ env.APP_NAME }}-${{ matrix.suffix }}.tar.gz"
         path: release-dist
 
     - name: Extract Artifact Archive
       run: |
-        tar -xzvf release-dist/todo-highlight-lsp-${{ matrix.suffix }}.tar.gz -C .
+        tar -xzvf release-dist/"${{ env.APP_NAME }}-${{ matrix.suffix }}".tar.gz -C .
 
     - name: Test Bin
-      run: ./todo-highlight-lsp --version
+      run: ./"${{ env.APP_NAME }}" --version
   test_binaries_windows:
     name: Test Binaries (Windows)
     needs: build
@@ -166,24 +168,24 @@ jobs:
     - name: Download Artifact Archive
       uses: actions/download-artifact@v7
       with:
-        name: todo-highlight-lsp-${{ matrix.suffix }}.zip
+        name: "${{ env.APP_NAME }}-${{ matrix.suffix }}.zip"
         path: release-dist
 
     - name: Extract Artifact Archive
       shell: pwsh
       run: |
-        $zipPath = "release-dist\todo-highlight-lsp-${{ matrix.suffix }}.zip"
+        $zipPath = "release-dist\${{ env.APP_NAME }}-${{ matrix.suffix }}.zip"
         Expand-Archive -Path $zipPath -DestinationPath "." -Force
 
     - name: Test Bin
       shell: pwsh
       run: |
-        ./todo-highlight-lsp.exe --version
+        ./"${{ env.APP_NAME }}".exe --version
   release:
     name: Release
     needs: build
-    runs-on: ubuntu-latest
     if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
     steps:
     - name: Setup | Checkout
       uses: actions/checkout@v4
