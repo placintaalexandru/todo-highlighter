@@ -13,8 +13,8 @@ concurrency:
 jobs:
   build:
     uses: ./.github/workflows/build.yml
-  test_binaries_linux:
-    name: Test Binaries (Linux & macOS
+  test_binaries_unix:
+    name: Test Binaries (Linux & macOS)
     needs: build
     strategy:
       fail-fast: false
@@ -32,6 +32,42 @@ jobs:
           os: macos-15-intel
         - suffix: darwin-arm64
           os: macos-latest
+        - suffix: windows-amd64
+          os: windows-latest
+        - suffix: windows-arm64
+          os: windows-11-arm
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Download Artifact Archive
+      uses: actions/download-artifact@v7
+      with:
+        name: todo-highlight-lsp-${{ matrix.suffix }}.tar.gz
+        path: release-dist
+
+    - name: Checksums
+      run: |
+        ls -lha release-dist
+        for file in release-dist/**;
+          do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256";
+        done
+
+    - name: Extract Artifact Archive
+      run: |
+        tar -xzvf release-dist/todo-highlight-lsp-${{ matrix.suffix }}.tar.gz -C .
+
+    - name: Test Bin
+      run: ./todo-highlight-lsp --version
+  test_binaries_windows:
+    name: Test Binaries (Windows)
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - suffix: windows-amd64
+          os: windows-latest
+        - suffix: windows-arm64
+          os: windows-11-arm
     runs-on: ${{ matrix.os }}
     steps:
     - name: Download Artifact Archive
