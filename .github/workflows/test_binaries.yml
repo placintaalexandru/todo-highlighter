@@ -73,15 +73,24 @@ jobs:
         path: release-dist
 
     - name: Checksums
+      shell: pwsh
       run: |
-        ls -lha release-dist
-        for file in release-dist/**;
-          do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256";
-        done
+        # Iterate over all files in release-dist and compute SHA256
+        Get-ChildItem -Recurse release-dist | ForEach-Object {
+          $file = $_.FullName
+          if (-not $_.PSIsContainer) {
+            $hash = Get-FileHash $file -Algorithm SHA256
+            $hash.Hash | Out-File -FilePath "$file.sha256" -Encoding ascii
+          }
+        }
 
     - name: Extract Artifact Archive
+      shell: pwsh
       run: |
-        tar -xzvf release-dist/todo-highlight-lsp-${{ matrix.suffix }}.zip -C .
+        $zipPath = "release-dist\todo-highlight-lsp-${{ matrix.suffix }}.zip"
+        Expand-Archive -Path $zipPath -DestinationPath "." -Force
 
     - name: Test Bin
-      run: ./todo-highlight-lsp.exe --version
+      shell: pwsh
+      run: |
+        ./todo-highlight-lsp.exe --version
