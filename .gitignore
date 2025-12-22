@@ -1,0 +1,11 @@
+# IDE
+.zed
+.vscode
+.idea
+
+# Build
+**/target
+**/*.wasm
+
+# Os-specific files
+.DS_Store

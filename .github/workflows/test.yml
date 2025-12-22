@@ -1,0 +1,125 @@
+name: Test
+on:
+  push:
+    branches:
+    - main
+    - release-v*
+    tags:
+    - "v*"
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches:
+    - main
+    - release-v*
+permissions:
+  contents: read
+concurrency:
+  # Cancel old actions upon push
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  # Runs tests across multiple toolchains and operating systems
+  required:
+    runs-on: ${{ matrix.os }}
+    name: test / ${{ matrix.os }} / ${{ matrix.toolchain }}
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - windows-latest
+          - ubuntu-latest
+        toolchain:
+          - stable
+          - beta
+    steps:
+      # if your project needs OpenSSL, uncomment this to fix Windows builds.
+      # it's commented out by default as the installation command takes 5-10m.
+      # - run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
+      #   if: runner.os == 'Windows'
+      # - run: vcpkg install openssl:x64-windows-static-md
+      #   if: runner.os == 'Windows'
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install ${{ matrix.toolchain }}
+        uses: crusty-pie/toolchain@v1
+        with:
+          # Works only for custom toolchains as stable will install default components
+          # Limit the scope of rustup installation: https://blog.rust-lang.org/2019/10/15/Rustup-1.20.0.html#profiles
+          profile: minimal
+          toolchain: ${{ matrix.toolchain }}
+
+      - name: Generate lock file
+        # GitHub actions magic to check if the lock file does not exist
+        if: hashFiles('Cargo.lock') == ''
+        uses: actions-rs/cargo@v1
+        with:
+          command: generate-lockfile
+
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --locked --all-features
+
+      # https://github.com/rust-lang/cargo/issues/6669
+      - name: Test doc
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --locked --all-features --doc
+  coverage:
+    runs-on: ubuntu-latest
+    name: stable / coverage
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Stable
+        uses: crusty-pie/toolchain@v1
+        with:
+          toolchain: stable
+          components: llvm-tools-preview
+
+      - name: Generate lock file
+        # GitHub actions magic to check if the lock file does not exist
+        if: hashFiles('Cargo.lock') == ''
+        uses: actions-rs/cargo@v1
+        with:
+          command: generate-lockfile
+
+      - name: Install grcov
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: grcov
+
+      - name: Run Tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --workspace --locked --all-features
+        env:
+          RUSTFLAGS: "-C instrument-coverage"
+          LLVM_PROFILE_FILE: "${{ github.workspace }}/target/debug/coverage/profiling_data/todo-highlight-%p-%m.profraw"
+
+      - name: Coverage Report
+        run: |
+          grcov "${{ github.workspace }}"/target/debug/coverage/profiling_data \
+            -s . \
+            --binary-path "${{ github.workspace }}"/target/debug \
+            --keep-only 'language_server/src/*' \
+            --keep-only 'todo_highlight/src/*' \
+            --excl-start "grcov-excl-start" \
+            --excl-stop "grcov-excl-stop" \
+            --output-types cobertura \
+            -o target/debug/coverage/cobertura.xml
+
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v5
+        with:
+          # Exit with error if codecov runs into error
+          file: "${{ github.workspace }}/target/debug/coverage/cobertura.xml"
+          fail_ci_if_error: true
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}

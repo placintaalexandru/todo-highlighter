@@ -1,0 +1,12 @@
+[workspace]
+resolver = "3"
+
+members = [
+    "language_server",
+    "todo_highlight"
+]
+default-members = ["language_server"]
+
+[workspace.package]
+license = "MIT"
+repository = "https://github.com/placintaalexandru/zed-todo-highlighter"

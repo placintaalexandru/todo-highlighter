@@ -1,0 +1,13 @@
+[package]
+name = "todo_highlight"
+edition = "2021"
+version = "0.1.0"
+description = "Zed extension that highlights TODOs and other keywords in your code."
+license.workspace = true
+repository.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+zed_extension_api = "0.7"
