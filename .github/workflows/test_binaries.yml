@@ -37,7 +37,7 @@ jobs:
     - name: Checksums
       run: |
         ls -lha release-dist
-        for file in release-dist/**/*;
+        for file in release-dist/**;
           do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256";
         done
 
