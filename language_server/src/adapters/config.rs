@@ -38,6 +38,7 @@ impl Config {
     }
 }
 
+// grcov-excl-start
 #[cfg(test)]
 mod tests {
     use serde_json::json;
@@ -128,3 +129,4 @@ mod tests {
         assert_eq!(highlights["BUG"].background.split_rgb(), (255, 0, 0));
     }
 }
+// grcov-excl-stop

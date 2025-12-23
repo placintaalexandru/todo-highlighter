@@ -81,7 +81,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: install
-          args: cargo-llvm-cov
+          args: grcov
 
       - name: Generate lock file
         # GitHub actions magic to check if the lock file does not exist
@@ -96,10 +96,30 @@ jobs:
           command: llvm-cov
           args: --locked --all-features --lcov --output-path lcov.info
 
+      - name: Run Tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --locked --all-features
+
+      - name: Coverage Report
+        run: |
+          grcov . -s .
+            --branch
+            --ignore-not-existing
+            --keep-only 'src/*'
+            --ignore 'src/bin/*'
+            --excl-start "grcov-excl-start"
+            --excl-stop "grcov-excl-stop"
+            --binary-path ./target/debug/
+            -t cobertura
+            -o cobertura.xml
+
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v5
         with:
           # Exit with error if codecov runs into error
+          file: cobertura.xml
           fail_ci_if_error: true
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}

@@ -32,6 +32,7 @@ pub trait Colorer {
     }
 }
 
+// grcov-excl-start
 #[cfg(test)]
 mod tests {
     use mockall::mock;
@@ -80,3 +81,4 @@ mod tests {
         );
     }
 }
+// grcov-excl-start
