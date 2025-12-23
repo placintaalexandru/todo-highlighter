@@ -100,7 +100,7 @@ jobs:
           LLVM_PROFILE_FILE: "todo-highlight-%p-%m.profraw"
 
       - name: Coverage Report
-        run: |
+        run: >
           grcov . -s .
             --branch
             --ignore-not-existing
