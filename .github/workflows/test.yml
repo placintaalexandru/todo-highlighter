@@ -105,7 +105,6 @@ jobs:
             --branch \
             --ignore-not-existing \
             --keep-only 'src/*' \
-            --ignore 'src/bin/*' \
             --excl-start "grcov-excl-start" \
             --excl-stop "grcov-excl-stop" \
             --binary-path ./target/debug/ \
@@ -133,15 +132,13 @@ jobs:
           lcov --branch-coverage \
             -a "${{ github.workspace }}"/target/debug/coverage/extension.lcov \
             -a "${{ github.workspace }}"/target/debug/coverage/language_server.lcov \
-            -o merged.lcov
-
-          lcov_cobertura -o cobertura.xml merged.lcov
+            -o "${{ github.workspace }}"/target/debug/coverage/coverage.lcov
 
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v5
         with:
           # Exit with error if codecov runs into error
-          file: cobertura.xml
+          file: "${{ github.workspace }}/target/debug/coverage/coverage.lcov"
           fail_ci_if_error: true
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
