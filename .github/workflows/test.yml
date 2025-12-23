@@ -122,23 +122,27 @@ jobs:
             -t lcov \
             -o "${{ github.workspace }}"/target/debug/coverage/language_server.lcov
 
-      # - name: Setup LCOV
-      #   uses: hrishikesh-kadam/setup-lcov@v1
+      - name: Setup LCOV
+        uses: hrishikesh-kadam/setup-lcov@v1
 
-      # - name: Aggregate Reports
-      #   run: |
-      #     pip install lcov_cobertura
+      - name: Aggregate Reports
+        run: |
+          pip install lcov_cobertura
 
-      #     lcov --branch-coverage \
-      #       -a "${{ github.workspace }}"/target/debug/coverage/extension.lcov \
-      #       -a "${{ github.workspace }}"/target/debug/coverage/language_server.lcov \
-      #       -o "${{ github.workspace }}"/target/debug/coverage/coverage.lcov
+          lcov --branch-coverage \
+            -a "${{ github.workspace }}"/target/debug/coverage/extension.lcov \
+            -a "${{ github.workspace }}"/target/debug/coverage/language_server.lcov \
+            -o "${{ github.workspace }}"/target/debug/coverage/merged.lcov
+
+          lcov_cobertura \
+            -o "${{ github.workspace }}"/target/debug/coverage/cobertura.xml \
+            "${{ github.workspace }}"/target/debug/coverage/merged.lcov
 
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v5
         with:
           # Exit with error if codecov runs into error
-          files: "${{ github.workspace }}/target/debug/coverage/extension.lcov,${{ github.workspace }}/target/debug/coverage/language_server.lcov"
+          file: "${{ github.workspace }}/target/debug/coverage/cobertura.xml"
           fail_ci_if_error: true
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
