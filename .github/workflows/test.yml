@@ -109,7 +109,8 @@ jobs:
             --excl-start "grcov-excl-start" \
             --excl-stop "grcov-excl-stop" \
             --binary-path ./target/debug/ \
-            -t lcov -o ./target/debug/coverage/extension.lcov
+            -t lcov \
+            -o "${{ github.workspace }}"/target/debug/coverage/extension.lcov
 
           grcov . -s ./language_server \
             --branch \
@@ -119,7 +120,8 @@ jobs:
             --excl-start "grcov-excl-start" \
             --excl-stop "grcov-excl-stop" \
             --binary-path ./target/debug/ \
-            -t lcov -o ./target/debug/coverage/language_server.lcov
+            -t lcov \
+            -o "${{ github.workspace }}"/target/debug/coverage/language_server.lcov
 
       - name: Setup LCOV
         uses: hrishikesh-kadam/setup-lcov@v1
@@ -127,8 +129,8 @@ jobs:
       - name: Aggregate Reports
         run: |
           lcov --branch-coverage \
-            -a extension.lcov \
-            -a language_server.lcov \
+            -a "${{ github.workspace }}"/target/debug/coverage/extension.lcov \
+            -a "${{ github.workspace }}"/target/debug/coverage/language_server.lcov \
             -o merged.lcov
 
           lcov_cobertura -o cobertura.xml merged.lcov
