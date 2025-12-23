@@ -101,40 +101,32 @@ jobs:
 
       - name: Coverage Report
         run: |
-          grcov . -s ./extension
-          --branch
-          --ignore-not-existing
-          --keep-only 'src/*'
-          --ignore 'src/bin/*'
-          --excl-start "grcov-excl-start"
-          --excl-stop "grcov-excl-stop"
-          --binary-path ./target/debug/
-          -t lcov -o extension.lcov
-          grcov . -s ./language_server
-          --branch
-          --ignore-not-existing
-          --keep-only 'src/*'
-          --ignore 'src/bin/*'
-          --excl-start "grcov-excl-start"
-          --excl-stop "grcov-excl-stop"
-          --binary-path ./target/debug/
-          -t lcov -o language_server.lcov
-          lcov --branch-coverage
-          -a extension.lcov
-          -a language_server.lcov
-          -o merged.lcov
-          lcov_cobertura -o cobertura.xml merged.lcov
-          grcov . -s .
-          --branch
-          --ignore-not-existing
-          --keep-only 'src/*'
-          --ignore 'src/bin/*'
-          --excl-start "grcov-excl-start"
-          --excl-stop "grcov-excl-stop"
-          --binary-path ./target/debug/
-          -t cobertura
-          -o cobertura.xml
+          grcov . -s ./extension \
+            --branch \
+            --ignore-not-existing \
+            --keep-only 'src/*' \
+            --ignore 'src/bin/*' \
+            --excl-start "grcov-excl-start" \
+            --excl-stop "grcov-excl-stop" \
+            --binary-path ./target/debug/ \
+            -t lcov -o extension.lcov
 
+          grcov . -s ./language_server \
+            --branch \
+            --ignore-not-existing \
+            --keep-only 'src/*' \
+            --ignore 'src/bin/*' \
+            --excl-start "grcov-excl-start" \
+            --excl-stop "grcov-excl-stop" \
+            --binary-path ./target/debug/ \
+            -t lcov -o language_server.lcov
+
+          lcov --branch-coverage \
+            -a extension.lcov \
+            -a language_server.lcov \
+            -o merged.lcov
+
+          lcov_cobertura -o cobertura.xml merged.lcov \
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v5
         with:
