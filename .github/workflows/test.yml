@@ -95,6 +95,9 @@ jobs:
         with:
           command: test
           args: --locked --all-features
+        env:
+          RUSTFLAGS: "-C instrument-coverage"
+          LLVM_PROFILE_FILE: "todo-highlight-%p-%m.profraw"
 
       - name: Coverage Report
         run: |
