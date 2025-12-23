@@ -77,12 +77,6 @@ jobs:
           toolchain: stable
           components: llvm-tools-preview
 
-      - name: Install cargo-llvm-cov
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: grcov
-
       - name: Generate lock file
         # GitHub actions magic to check if the lock file does not exist
         if: hashFiles('Cargo.lock') == ''
@@ -90,11 +84,11 @@ jobs:
         with:
           command: generate-lockfile
 
-      - name: Run cargo-llvm-cov
+      - name: Install cargo-llvm-cov
         uses: actions-rs/cargo@v1
         with:
-          command: llvm-cov
-          args: --locked --all-features --lcov --output-path lcov.info
+          command: install
+          args: grcov
 
       - name: Run Tests
         uses: actions-rs/cargo@v1
